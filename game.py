@@ -123,6 +123,8 @@ class Game:
         self.isLive = False
     def move(self, direction):
         direction = int(direction)
+        self.player.directionChange(direction)
+
         (xLow, yLow), (xHigh, yHigh) = self.player.currentLoc
         self.player.currentLoc = [(xLow - (0.1 * direction), yLow), (xHigh - (0.1 * direction), yHigh)]
         self.movement = True
