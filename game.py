@@ -25,7 +25,10 @@ class Game:
         self.blocks = {}
         self.currentBlocks = {}
 
-        self.player = Player({}, self)
+        self.player = Player({
+            "health"    :   100,
+            "imgPath"   :   "player",
+        }, self)
 
     def run(self):
         while self.isLive:
