@@ -18,7 +18,7 @@ class Game:
         self.isLive = True
         self.currentTick = 0
 
-        self.movement = True
+        self.update = True
 
         self.screen = pygame.display.set_mode((850,800))
 
@@ -37,8 +37,8 @@ class Game:
             self.handleMousePresses()
             self.handleTicks()
 
-            if self.movement:
-                self.movement = False
+            if self.update:
+                self.update = False
                 self.getSetCurrentBlocks()
                 self.drawScreen()
 
@@ -61,7 +61,10 @@ class Game:
 
         if pygame.mouse.get_pressed()[0]:
             pos = pygame.mouse.get_pos()
-            print 23
+            for translatedXY, block in self.currentBlocks.iteritems():
+                if block.objectRect.collidepoint(pos):
+                    block.destroy()
+                    break
 
     def tickCheck(self):
         # Keep the press acknowledgement at a resonable speed
@@ -89,15 +92,15 @@ class Game:
             The idea will be to have a class that uses a noise algorithm to
             determine the block, depending on the location (factoring in the seed also) '''
         # return random.choice([Air(self), Grass(self), Dirt(self)])
-
+        pos = (x, y)
         if y < 8:
-            return Air(self)
+            return Air(pos, self)
         elif y == 8:
-            return Grass(self)
+            return Grass(pos, self)
         elif y in [9, 10, 11]:
-            return Dirt(self)
+            return Dirt(pos, self)
         else:
-            return Stone(self)
+            return Stone(pos, self)
 
     def drawScreen(self):
 
@@ -130,7 +133,7 @@ class Game:
 
         (xLow, yLow), (xHigh, yHigh) = self.player.currentLoc
         self.player.currentLoc = [(xLow - (0.1 * direction), yLow), (xHigh - (0.1 * direction), yHigh)]
-        self.movement = True
+        self.update = True
 
 if __name__ == '__main__':
     game = Game()
