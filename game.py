@@ -63,7 +63,10 @@ class Game:
             pos = pygame.mouse.get_pos()
             for translatedXY, block in self.currentBlocks.iteritems():
                 if block.objectRect.collidepoint(pos):
-                    block.destroy()
+                    isDestroyed = block.destroy()
+                    if isDestroyed:
+                        self.update = True
+                        del block
                     break
 
     def tickCheck(self):

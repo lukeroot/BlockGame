@@ -26,9 +26,7 @@ class Block(GameObject):
         if self.resistance == 0:
             pos = self.pos
             self.game.blocks[(pos)] = Air(pos, self.game)
-            self.game.update = True
-            # Cleanup self
-            del self
+            return True
 
 class Air(Block):
     def __init__(self, pos, game):
