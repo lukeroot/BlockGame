@@ -21,6 +21,7 @@ class Game:
         self.update = True
 
         self.screen = pygame.display.set_mode((850,800))
+        self.cameraLocation = [(0, 0), (17, 16)]
 
         self.blocks = {}
         self.currentBlocks = {}
@@ -76,7 +77,7 @@ class Game:
 
     def getSetCurrentBlocks(self):
         self.currentBlocks = {}
-        (xLow, yLow), (xHigh, yHigh) = self.player.currentLoc
+        (xLow, yLow), (xHigh, yHigh) = self.cameraLocation
 
         for x in xrange(int(math.floor(xLow)), int(math.ceil(xHigh))):
             for y in xrange(int(math.floor(yLow)), int(math.ceil(yHigh))):
@@ -134,8 +135,8 @@ class Game:
         direction = int(direction)
         self.player.directionChange(direction)
 
-        (xLow, yLow), (xHigh, yHigh) = self.player.currentLoc
-        self.player.currentLoc = [(xLow - (0.1 * direction), yLow), (xHigh - (0.1 * direction), yHigh)]
+        (xLow, yLow), (xHigh, yHigh) = self.cameraLocation
+        self.cameraLocation = [(xLow - (0.1 * direction), yLow), (xHigh - (0.1 * direction), yHigh)]
         self.update = True
 
 if __name__ == '__main__':

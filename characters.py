@@ -10,7 +10,6 @@ class Player(Humanoid):
     def __init__(self, properties, game):
 
         self.direction = 1
-        self.currentLoc = [(0, 0), (17, 16)]
 
         super(Player, self).__init__((400, 320), properties, game)
 
