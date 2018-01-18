@@ -17,7 +17,6 @@ class Game:
 
         self.isLive = True
         self.currentTick = 0
-
         self.update = True
 
         self.screen = pygame.display.set_mode((850,800))
@@ -47,12 +46,21 @@ class Game:
         pygame.quit()
         quit()
 
-    def handleTicks(self):
-        if (self.currentTick > 1000000):
-            self.currentTick = 0
-
-        self.currentTick += 1
-
+    def handleKeyPresses(self):
+        if self.tickCheck():
+            return
+        keys = pygame.key.get_pressed()
+        # Check if we're pressing a button
+        if sum(list(keys)) == 0:
+            return
+        # Looping through the possible keys to check for a match
+        for key, call in self.KEY_BINDS.iteritems():
+            if keys[key]:
+                underscoreLoc = call.find("_")
+                if underscoreLoc != -1:
+                    getattr(self, call[:underscoreLoc])(call[underscoreLoc + 1:])
+                else:
+                    getattr(self, call)()
 
     def handleMousePresses(self):
         # TODO entire function (looping currentBlocks to check collide)
@@ -75,6 +83,12 @@ class Game:
         # Keep the press acknowledgement at a resonable speed
         if int(self.currentTick) % 10000 != 0:
             return True
+
+    def handleTicks(self):
+        if self.currentTick > 1000000:
+            self.currentTick = 0
+
+        self.currentTick += 1
 
     def getSetCurrentBlocks(self):
         self.currentBlocks = {}
@@ -108,37 +122,11 @@ class Game:
             return Stone(pos, self)
 
     def drawScreen(self):
-
         for translatedXY, block in self.currentBlocks.iteritems():
             block.draw(translatedXY)
 
         self.player.draw()
         self.py.display.flip()
-
-    def handleKeyPresses(self):
-        if self.tickCheck():
-            return
-        keys = pygame.key.get_pressed()
-        # Check if we're pressing a button
-        if sum(list(keys)) == 0:
-            return
-        # Looping through the possible keys to check for a match
-        for key, call in self.KEY_BINDS.iteritems():
-            if keys[key]:
-                underscoreLoc = call.find("_")
-                if underscoreLoc != -1:
-                    getattr(self, call[:underscoreLoc])(call[underscoreLoc + 1:])
-                else:
-                    getattr(self, call)()
-    def quit(self):
-        self.isLive = False
-    def move(self, direction):
-        direction = int(direction)
-        self.player.directionChange(direction)
-
-        (xLow, yLow), (xHigh, yHigh) = self.cameraLocation
-        self.cameraLocation = [(xLow - (0.1 * direction), yLow), (xHigh - (0.1 * direction), yHigh)]
-        self.update = True
 
     def checkGravity(self):
         def drop():
@@ -154,16 +142,24 @@ class Game:
             There will only ever be 1 or 2 block/s underneath '''
         if self.blocks[(x, y)].isAir:
             # Only one block is underneath us at this point (to within a tolerance)
-            if xLow % 1 <= 0.03:
+            if xLow % 1 <= 0.07:
                 drop()
             # Two block reside underneath at this point so we need to work out which side they're on
-            elif xLow % 1 > 0.5:
-                if self.blocks[(x - 1, y)].isAir:
-                    drop()
-            else:
-                if self.blocks[(x + 1, y)].isAir:
-                    drop()
+            elif xLow % 1 > 0.5 and self.blocks[(x - 1, y)].isAir:
+                drop()
+            elif self.blocks[(x + 1, y)].isAir:
+                drop()
 
+    def quit(self):
+        self.isLive = False
+
+    def move(self, direction):
+        direction = int(direction)
+        self.player.directionChange(direction)
+
+        (xLow, yLow), (xHigh, yHigh) = self.cameraLocation
+        self.cameraLocation = [(xLow - (0.1 * direction), yLow), (xHigh - (0.1 * direction), yHigh)]
+        self.update = True
 
 if __name__ == '__main__':
     game = Game()
