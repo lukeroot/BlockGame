@@ -42,6 +42,7 @@ class Game:
                 self.update = False
                 self.getSetCurrentBlocks()
                 self.drawScreen()
+                self.checkGravity()
 
         pygame.quit()
         quit()
@@ -138,6 +139,31 @@ class Game:
         (xLow, yLow), (xHigh, yHigh) = self.cameraLocation
         self.cameraLocation = [(xLow - (0.1 * direction), yLow), (xHigh - (0.1 * direction), yHigh)]
         self.update = True
+
+    def checkGravity(self):
+        def drop():
+            # Need to implement a 'V = gt' logic here as to enable realistic fall speed
+            self.cameraLocation = [(xLow, yLow + 0.1), (xHigh, yHigh + 0.1)]
+            self.update = True
+
+        (xLow, yLow), (xHigh, yHigh) = self.cameraLocation
+        x = int((xHigh + xLow) / 2.0)
+        y = int((yHigh + yLow) / 2.0)
+
+        ''' As the player is always static in the middle of the screen,
+            There will only ever be 1 or 2 block/s underneath '''
+        if self.blocks[(x, y)].isAir:
+            # Only one block is underneath us at this point (to within a tolerance)
+            if xLow % 1 <= 0.03:
+                drop()
+            # Two block reside underneath at this point so we need to work out which side they're on
+            elif xLow % 1 > 0.5:
+                if self.blocks[(x - 1, y)].isAir:
+                    drop()
+            else:
+                if self.blocks[(x + 1, y)].isAir:
+                    drop()
+
 
 if __name__ == '__main__':
     game = Game()
