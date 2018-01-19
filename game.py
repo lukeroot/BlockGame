@@ -142,7 +142,7 @@ class Game:
             There will only ever be 1 or 2 block/s underneath '''
         if self.blocks[(x, y)].isAir:
             # Only one block is underneath us at this point (to within a tolerance)
-            if xLow % 1 <= 0.07:
+            if xLow % 1 <= 0.1 or xLow % 1 >= 0.9:
                 drop()
             # Two block reside underneath at this point so we need to work out which side they're on
             elif xLow % 1 > 0.5 and self.blocks[(x - 1, y)].isAir:
